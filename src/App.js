@@ -1,14 +1,24 @@
-import Lifecycle from "./Lifecycle";
-import { useState } from "react";
-function App() {
-  const [show, setShow] = useState(false);
 
+import { forwardRef, useRef } from "react";
+
+function Input(props, ref) {
+  return <input ref={ref} type="text" {...props}></input>;
+}
+
+
+Input = forwardRef(Input);
+
+function App() {
+  const inputRef = useRef();
+  const focusInput = () => {
+    console.log(inputRef.current);
+    inputRef.current.focus();
+  };
   return (
     <>
-      <button onClick={() => setShow((show) => !show)}>
-        {show ? "Gizle" : "Göster"}
-      </button>
-      {show && <Lifecycle></Lifecycle>}
+      <h1>useRef() - forwardRef()</h1>
+      <Input ref={inputRef}></Input>
+      <button onClick={focusInput}>Focusla</button>
     </>
   );
 }
