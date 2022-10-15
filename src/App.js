@@ -1,4 +1,5 @@
 //import { useMemo } from "react";
+import { useEffect } from "react";
 import { useState } from "react";
 
 function App() {
@@ -14,15 +15,21 @@ function App() {
     { key: 4, value: "HTML" },
   ];
 
-  const checkRule=(key,checked)=>{
-    setRules(rules=>rules.map(rule=>{
-      if(key===rule.key){
-        rule.checked=checked
-      }
-      return rule
-    }))
-  }
-
+  const checkRule = (key, checked) => {
+    setRules((rules) =>
+      rules.map((rule) => {
+        if (key === rule.key) {
+          rule.checked = checked;
+        }
+        return rule;
+      })
+    );
+  };
+  const levels = [
+    { key: "beginner", value: "Başlangıç" },
+    { key: "jr_developer", value: "Jr. Developer" },
+    { key: "sr_developer", value: "Sr. Developer" },
+  ];
 
   const [name, setName] = useState("kubilay");
   const [description, setDescription] = useState("");
@@ -34,14 +41,42 @@ function App() {
     { key: 2, value: "2. kural kabul", checked: false },
     { key: 3, value: "3. kural kabul", checked: true },
   ]);
+  const [level, setLevel] = useState("sr_developer");
+  const [avatar, setAvatar] = useState(false);
+  const [image, setImage] = useState(false);
+
+  useEffect(() => {
+    if (avatar) {
+      const fileReader = new FileReader();
+      fileReader.addEventListener("load", function () {
+        //console.log(this.result)
+        setImage(this.result);
+      });
+      fileReader.readAsDataURL(avatar);
+    }
+  }, [avatar]);
   // const selectedGender=useMemo(()=>{
   //   return genders[gender]
   // },[gender])
 
+  const submitHandle = () => {
+    const formData = new FormData();
+    formData.append("avatar", avatar);
+    formData.append("name", name);
+
+    fetch("https://jsonplaceholder.typicode.com/posts", {
+      method: "POST",
+      body: formData,
+    });
+  };
+
   const selectedGender = genders.find((g) => g.key === gender);
   const selectedCategories =
     categories && categoryList.filter((c) => categories.includes(c.key));
-  const enabled=rules.every(rule=>rule.checked)
+  const enabled = rules.every((rule) => rule.checked);
+  const selectedLevel = levels.find((g) => g.key === level);
+  // eslint-disable-next-line no-self-compare
+  const imageEnabled = 1 === 1 && avatar;
   return (
     <>
       <button onClick={() => setName("Yazı")}>Değiştir</button>
@@ -73,7 +108,6 @@ function App() {
       {gender}
       {/* {selectedGender} */}
       <pre> {JSON.stringify(selectedGender, null, 2)}</pre>
-
       <br></br>
       <button onClick={() => setCategories([2, 3, 4])}>Kategoriler Seç</button>
       <select
@@ -93,7 +127,6 @@ function App() {
       </select>
       <pre> {JSON.stringify(categories, null, 2)}</pre>
       <pre> {JSON.stringify(selectedCategories, null, 2)}</pre>
-
       <br />
       <label>
         <input
@@ -105,12 +138,14 @@ function App() {
       </label>
       <br></br>
       <button disabled={!rule}>Devam Et</button>
-
       <br></br>
-
       {rules.map((rule) => (
         <label key={rule.key}>
-          <input type="checkbox" checked={rule.checked} onChange={e =>checkRule(rule.key,e.target.checked)}></input>
+          <input
+            type="checkbox"
+            checked={rule.checked}
+            onChange={(e) => checkRule(rule.key, e.target.checked)}
+          ></input>
           {rule.value}
         </label>
       ))}
@@ -118,7 +153,39 @@ function App() {
       <pre> {JSON.stringify(rules, null, 2)}</pre>
       <br></br>
       <button disabled={!enabled}>Devam Et</button>
-
+      <br></br>
+      {levels.map((lv, index) => (
+        <label key={index}>
+          <input
+            type="radio"
+            value={lv.key}
+            checked={lv.key === level}
+            onChange={(e) => setLevel(e.target.value)}
+          ></input>
+          {lv.value}
+        </label>
+      ))}
+      <br></br>
+      {level} <br></br>
+      <pre>{JSON.stringify(selectedLevel)}</pre>
+      <br></br>
+      <label>
+        <input
+          type="file"
+          onChange={(e) => setAvatar(e.target.files[0])}
+        ></input>
+      </label>
+      <br />
+      {avatar && (
+        <>
+          <h3>{avatar.name}</h3>
+          {image && <img src={image} alt=""></img>}
+        </>
+      )}
+      <br></br>
+      <button disabled={!imageEnabled} onClick={submitHandle}>
+        Resim Göster
+      </button>
     </>
   );
 }
