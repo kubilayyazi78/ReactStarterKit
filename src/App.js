@@ -1,14 +1,11 @@
-import SiteProvider from "./context/SiteContext"
-import Home from "./contextExample/Home";
+import { useEffect } from "react";
+import { getPosts } from "./services/post";
 
-function App (){
-
-    
-    return (
-        <SiteProvider>
-            <Home></Home>
-        </SiteProvider>
-    )
+function App() {
+  useEffect(() => {
+    getPosts().then((res) => console.log(res));
+  });
+  return <></>;
 }
 
 export default App;
