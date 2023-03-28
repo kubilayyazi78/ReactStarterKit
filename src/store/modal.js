@@ -11,7 +11,11 @@ const modal = createSlice({
     append: (state, action) => {
       state.modals = [...state.modals, action.payload];
     },
-    destroy: (state, action) => {},
+    destroy: (state, action) => {
+      const data = [ ...state.modals ]
+      data.pop();
+      state.modals = data;
+    },
     destroyAll: (state) => {
       state.modals = [];
     },
@@ -19,4 +23,4 @@ const modal = createSlice({
 });
 
 export const { append, destroy, destroyAll } = modal.actions;
-export default modal.reducer
+export default modal.reducer;
